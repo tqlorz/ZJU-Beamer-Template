@@ -1,0 +1,222 @@
+% Copyright 2009 by Pim Vullers
+% Modified 2023-08-22 by [光头哥]
+% Modified 2025-07-10 by [PhilFan]
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License (LPPL), either version 1.3c
+%    or (at your option) any later version.
+% 2. under the GNU Public License (GPL), either version 3
+%    or (at your option) any later version.
+%
+% This work is derived from the original `zju` package (by 光头哥).
+% The modified version is identified by the name '[zju_beamer]'
+% to avoid confusion with the original work.
+
+% ============================================================
+% 1. 宏包导入与基础设置
+% ============================================================
+
+\ProvidesPackage{zju_beamer}  
+
+% --- 字体与中文支持 ---
+\usefonttheme[onlymath]{serif}                % 数学公式使用衬线字体
+\RequirePackage{fontspec}                     % 字体选择
+\RequirePackage{xeCJK}                        % XeLaTeX 中文支持
+\RequirePackage{ctex}                         % 中文支持
+
+% --- 数学与符号 ---
+\RequirePackage{amsmath,amsfonts,amssymb,bm}  % 数学公式相关
+
+% --- 图形与超链接 ---
+\RequirePackage{graphicx}                     % 图片插入
+\RequirePackage{hyperref,url}                 % 超链接与网址
+
+% --- 其他常用宏包 ---
+\RequirePackage{metalogo}                     % \XeLaTeX 等 logo
+\RequirePackage{lipsum}                       % 生成填充文本
+\RequirePackage{listings}                     % 代码高亮
+\RequirePackage{xcolor}                        % 颜色支持，dvipsnames 选项在 .tex 中通过 \PassOptionsToPackage 传入
+\RequirePackage{subcaption}                   % 并排图片
+\RequirePackage{multicol}                     % 多栏环境
+\RequirePackage{caption}                      % 图表标题定制
+\RequirePackage{fancyhdr}                     % 页眉页脚
+\RequirePackage{tcolorbox}                    % 彩色文本框
+
+% --- 中文标点句号替换 ---
+\catcode`\。=\active
+\newcommand{。}{．} % 将“。”替换为“.”，科技文献规范
+
+% ============================================================
+% 2. Beamer 主题继承与基本主题设置
+% ============================================================
+
+% --- 继承现有主题 ---
+\useoutertheme{split}         % 分割式头部和尾部布局
+\usecolortheme{whale}         % 外部元素背景色
+\useinnertheme{rounded}       % 内部元素圆角
+\usecolortheme{orchid}        % 内部元素前景色
+
+% ============================================================
+% 3. Beamer 内部样式自定义
+% ============================================================
+
+% --- 列表项目符号样式 ---
+\beamertemplateballitem
+% 启用 ballitem 风格（可注释掉不用）
+
+\setbeamertemplate{itemize items}[circle]
+% itemize 项目符号样式，可选：[circle]（圆圈）、[square]（方块）、[triangle]（三角）、[ball]（小球）、[default]（默认）
+
+\setbeamertemplate{enumerate items}[circle]
+% enumerate 编号样式，可选：[circle]（圆圈）、[square]（方块）、[default]（数字）、[ball]（小球）
+
+\setbeamertemplate{sections/subsections in toc}[default]
+% 目录章节样式，可选：[default]、[ball]、[square]、[circle]、[sections numbered]
+
+\setbeamertemplate{blocks}[rounded]
+% block 环境样式，可选：[rounded]（圆角）、[default]、[shadowed]（阴影）
+
+\setbeamertemplate{section in toc}[square]
+% 目录 section 符号样式，可选：[square]（方块）、[ball]（小球）、[circle]（圆圈）、[default]
+
+\setbeamertemplate{title page}[default][colsep=-4bp,rounded=true]
+% 标题页样式，可选：[default]、[plain]，可加参数如[colsep=...]、[rounded=true/false]
+
+% --- 首页信息间距：跳过空单位栏，姓名与日期紧凑排列 ---
+\setbeamertemplate{author}[default][sep=0pt]
+\setbeamertemplate{institute}[default][sep=0pt]
+\setbeamertemplate{date}[default][sep=0pt]
+\defbeamertemplate*{title page}{zju theme}{%
+  \vbox{}\vfill%
+  \begingroup%
+    \centering%
+    \usebeamertemplate{title}%
+    \vskip1em\par%
+    \usebeamertemplate{author}%
+    \ifx\insertinstitute\@empty\else%
+      \vskip.4em\par%
+      \usebeamertemplate{institute}%
+    \fi%
+    \vskip.6em\par% 姓名（或单位）与日期之间的间距
+    \usebeamertemplate{date}%
+    \vskip.5em%
+    \usebeamertemplate{titlegraphic}%
+  \endgroup%
+  \vfill%
+}
+
+\setbeamertemplate{part page}[default][colsep=-4bp,rounded=true]
+% part 页样式，可选：[default]、[plain]，可加参数如[colsep=...]、[rounded=true/false]
+
+% \setbeamertemplate{navigation symbols}{}
+% 取消注释可隐藏导航符号，注释则显示
+
+% ============================================================
+% 4. 外部主题细节调整（Radboud 风格）
+% ============================================================
+
+% --- 背景设置 ---
+\setbeamertemplate{background}{} % 不显示右下方的淡蓝色 ZJU 校徽背景
+
+% --- 结构色设置 ---
+\usecolortheme[RGB={0,63,136}]{structure} % 主色调
+
+% --- 顶部深蓝色填充、白色标题 ---
+\setbeamercolor{frametitle}{fg=white,bg=structure.fg}
+
+% ============================================================
+% 5. 页脚与页眉（footline/headline）自定义
+% ============================================================
+
+% --- 页脚：仅保留右侧页码 ---
+\defbeamertemplate*{footline}{zju theme}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=1ex,right]{title in head/foot}%
+      \usebeamerfont{title in head/foot}%
+      \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}%
+    \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+% --- 移除独立页眉及章节导航 ---
+\setbeamertemplate{headline}{}
+
+% --- 校名和校徽仅在标题栏中显示 ---
+\pgfdeclareimage[width=.12\paperwidth]{title_logo}{figures/char.pdf}
+\pgfdeclareimage[width=.0375\paperwidth]{title_emblem}{figures/logo.pdf}
+
+% --- 标题栏：左侧标题，右侧校名和校徽 ---
+\defbeamertemplate*{frametitle}{zju theme}{%
+  \nointerlineskip%
+  \hbox{%
+    \hskip-\Gm@lmargin%
+    \begingroup%
+    \usebeamercolor{frametitle}%
+    \fboxsep=.15cm% 为标题及校徽保留上下边距
+    \colorbox{bg}{%
+      \begin{minipage}{\dimexpr\paperwidth-2\fboxsep\relax}%
+        \hbox to\linewidth{%
+          \hskip.15cm%
+          \begin{minipage}[c]{.74\paperwidth}%
+            \raggedright%
+            \usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}%
+            \strut\insertframetitle\strut\par%
+          \end{minipage}%
+          \hfill%
+          \begin{minipage}[c]{.12\paperwidth}%
+            \pgfuseimage{title_logo}%
+          \end{minipage}%
+          \hskip.15cm%
+          \begin{minipage}[c]{.0375\paperwidth}%
+            \pgfuseimage{title_emblem}%
+          \end{minipage}%
+          \hskip.15cm%
+        }%
+      \end{minipage}%
+    }%
+    \endgroup%
+    \hskip-\Gm@rmargin%
+  }%
+}
+
+% ============================================================
+% 6. 代码高亮与语言支持
+% ============================================================
+
+\lstset{
+    language=Tex,                                 % 代码语言
+    backgroundcolor=\color{white}, 
+    basicstyle=\ttfamily,                         % 字体族
+    breaklines=true,                              % 自动换行
+    keywordstyle=\bfseries\color{NavyBlue},       % 关键字样式
+    morekeywords={},                              % 额外关键字
+    emph={self},                                  % 强调词
+    emphstyle=\bfseries\color{Rhodamine},         % 强调词样式
+    commentstyle=\itshape\color{black!50!white},  % 注释样式
+    stringstyle=\bfseries\color{PineGreen!90!black}, % 字符串样式
+    columns=flexible,
+    numbers=left,                                 % 行号左侧
+    numbersep=2em,                                % 行号间距
+    numberstyle=\footnotesize,                    % 行号字体
+    frame=shadowbox,                              % 边框
+    rulesepcolor=\color{red!20!green!20!blue!20}, % 分隔线颜色
+    % framesep=1em                                % 代码与边框距离
+    showstringspaces=false
+}
+
+\lstloadlanguages{C,C++,Java,Matlab,python,Mathematica}
+
+% ============================================================
+% 7. 参考文献样式
+% ============================================================
+
+\setbeamertemplate{bibliography item}[text]
+\newcommand{\reference}{
+    \nocite{*}   % 列出 bib 文件中所有参考文献
+    \bibliographystyle{unsrt} % 参考文献格式
+    \begin{center}            % 居中显示
+    	\bibliography{references} % 生成参考文献列表
+    \end{center}
+}
